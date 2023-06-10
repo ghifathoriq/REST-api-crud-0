@@ -1,0 +1,105 @@
+dependency yang di butuhkan 
+
+express react mysql2 sequelize cors 
+express berfungsi sbg
+sequelize berfungsi sbg, adalah orm object relasional maping, untuk relasional database
+mysql2 berfungsi sbg 
+cors berfungsi sbg, cros origin reource sharing agar api kita biisa di akses dari luar domain
+
+perhatikan package.json 
+buat type: "module", agar bisa menggunakan jsx syntax  untuk import dan export module
+
+lalu buat file pada backend index.json 
+dan import modul" yg di perlukan dan lakukan koding 
+
+setelah itu jalankan server index.js dengan library nodemon agar ga capek reopen server
+command nodemon index (harus mengaktifkan mysql dan apache jika menggunakan xampp mysql db)
+
+lalu membuat folder baru yaitu config 
+lalu buat file Database.js
+
+lalu buatlah koneksinya dengan cara import
+import sequelize, 
+lalu buat variabel db = new sequelize('crud-db','root','',{
+    host: 'localhost',
+    dialect: 'mysql' // ini adalah db ms yang kita gunakan pada studikasus ini kita menggunakan mysql
+})
+
+lalu export db 
+
+setelah itu buka server mysql dan apache xampp, lalu buka browser phpmyadmin,
+lalu buat database baru dengan nama yang sama seperti yang sudah di deklarasi pada variabel db 
+yaitu crud-db, 
+setelah itu buat folder models pada folder models ini berisi struktur table bagaimana data kita
+disimpan nanti di database, buat file di dlm nya UserModel.js, lalu import module yg di perlukan
+seperti sequelize dan panggil langsung , dan import koneksinya yaitu db  from config/Database
+
+lalu buat variabel {DataTypes} = Sequelize
+
+buat variabel strukturdatabase const User = db.define('users', {
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    gender: DataTypes.STRING
+})
+
+lalu export default User
+
+lalu buat function yang berfungsi mengenerate table jika table user tidak terdapat di database 
+ini sam,a seperti fucntion pada umum nya hanya saja fnction ini tidak ada nama nya 
+
+(async()=> {
+    await db.sync()
+})() 
+
+
+setelah itu buat folder baru dengan nama controller, lalu buat file UserControler.js
+setelah itu import modelnya pada file tsbt
+
+lalu buat method getUser yang di export langsung  
+
+method ini berfungsi untuk membuat data baru
+export const getUsers = async(req, res) => {
+    try {
+        const response = await User.findALL()
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error.massage)
+    }
+}
+
+setelah itu buat folder routes, lalu buat file baru UserRoute.js, file ini berfungsi untuk 
+menghandle semua routingnya, pada file nya import express karena kita menggunakna express router
+
+lalu buat variabel router nya dan import controller nya 
+import {getUsers} from "../controller/UserControler.js"
+lalu import userRoute
+
+const router = express.Router();
+
+lalu buat endpoint baru degnan router 
+router.get('/users', getUser)
+
+lalu export default router;
+
+
+lalu pada index.js, kita import userRoute from ./routes/userRoute.js, lalu kita panggil sebagai middle ware
+
+app.use(UserRoute);
+
+lalu check pada terminal akana da function/query yg di eksekusi  untuk membuat sebah user di data base phpmyadmin
+maka akan ada table user dan terdapat id sbg primary key nama email dan gender, sesuai dengan schema yang kita buat sebelum nya
+
+
+lalu lakukan pengujian dengan menggunakan extension REST Client / postman
+dengan cara membuat file baru pada folder backend dengan nama request.rest
+
+lalu  buat method GET dan endpoint nya http://localhost:5000/users
+GET http://localhost:5000/users 
+jika terdapat tulisan send request, silahkan click lalu jika terdapat notif dan berisi empty STRING
+atau [] maka kita sudah berhasil.
+
+selanjutnya kembali ke USerController, llau kita membuat metod" untuk create, update. delete
+
+baut sama seperti export const getUser (create)
+
+dengan mengubah nama variabel nya menjadi getUserById
